@@ -1,4 +1,4 @@
-# Bounus Example - Jarvis Chatbot - Powered by OpenAI
+# Bonus Example - Jarvis Chatbot - Powered by OpenAI
 
 This is a Python-based chatbot application called **Jarvis** that uses the OpenAI API to respond to user inputs. The application can handle a variety of questions and provides meaningful responses based on OpenAI's GPT models. The chatbot runs in a terminal/command line interface and can answer questions in a conversational style.
 
