@@ -68,3 +68,9 @@ After setting up the environment and installing the dependencies, you can start 
 
 python chat.py
 ```
+
+# Bonus Example - Real time translator
+
+## Referece
+- https://alphacephei.com/vosk/models 
+- 
