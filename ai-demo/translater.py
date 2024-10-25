@@ -78,39 +78,49 @@ def translate_speech():
 # Create the main application window
 root = tk.Tk()
 root.title("Language Translator")
-root.geometry("500x300")
+
+# Set the window to full screen on startup
+root.state('normal')  # Maximize the window (fullscreen on Windows)
+root.columnconfigure(0, weight=1)
+root.columnconfigure(1, weight=1)
 
 # Language selection dropdowns
 source_lang_var = tk.StringVar(value="en")
 target_lang_var = tk.StringVar(value="hi")  # Default to Hindi
 
-# Left dropdown for source language
-ttk.Label(root, text="Source Language").grid(row=0, column=0, padx=10, pady=10)
-source_lang_menu = ttk.Combobox(root, textvariable=source_lang_var, values=list(languages.keys()))
-source_lang_menu.grid(row=1, column=0, padx=10)
+# Left side for source language
+left_frame = ttk.Frame(root, padding=10)
+left_frame.grid(row=0, column=0, sticky="nsew")
+left_frame.columnconfigure(0, weight=1)
+
+ttk.Label(left_frame, text="Source Language").grid(row=0, column=0, pady=5)
+source_lang_menu = ttk.Combobox(left_frame, textvariable=source_lang_var, values=list(languages.keys()))
+source_lang_menu.grid(row=1, column=0, pady=5, sticky="ew")
 source_lang_menu.set("en")
 
-# Right dropdown for target language
-ttk.Label(root, text="Target Language").grid(row=0, column=1, padx=10, pady=10)
-target_lang_menu = ttk.Combobox(root, textvariable=target_lang_var, values=list(languages.keys()))
-target_lang_menu.grid(row=1, column=1, padx=10)
+source_text_var = tk.StringVar()
+ttk.Label(left_frame, text="Recognized Text").grid(row=2, column=0, pady=5)
+source_text_label = ttk.Label(left_frame, textvariable=source_text_var, wraplength=400, relief="solid", padding=10)
+source_text_label.grid(row=3, column=0, pady=5, sticky="nsew")
+
+# Right side for target language
+right_frame = ttk.Frame(root, padding=10)
+right_frame.grid(row=0, column=1, sticky="nsew")
+right_frame.columnconfigure(0, weight=1)
+
+ttk.Label(right_frame, text="Target Language").grid(row=0, column=0, pady=5)
+target_lang_menu = ttk.Combobox(right_frame, textvariable=target_lang_var, values=list(languages.keys()))
+target_lang_menu.grid(row=1, column=0, pady=5, sticky="ew")
 target_lang_menu.set("hi")  # Set Hindi as the default target language
 
-# Text fields for source and translated text
-source_text_var = tk.StringVar()
 target_text_var = tk.StringVar()
+ttk.Label(right_frame, text="Translated Text").grid(row=2, column=0, pady=5)
+target_text_label = ttk.Label(right_frame, textvariable=target_text_var, wraplength=400, relief="solid", padding=10)
+target_text_label.grid(row=3, column=0, pady=5, sticky="nsew")
 
-ttk.Label(root, text="Recognized Text").grid(row=2, column=0, padx=10, pady=10)
-source_text_label = ttk.Label(root, textvariable=source_text_var, wraplength=200, relief="solid", padding=5)
-source_text_label.grid(row=3, column=0, padx=10, pady=5)
-
-ttk.Label(root, text="Translated Text").grid(row=2, column=1, padx=10, pady=10)
-target_text_label = ttk.Label(root, textvariable=target_text_var, wraplength=200, relief="solid", padding=5)
-target_text_label.grid(row=3, column=1, padx=10, pady=5)
-
-# Button to start translation
+# Button to start translation in the middle
 translate_button = ttk.Button(root, text="Translate Speech", command=translate_speech)
-translate_button.grid(row=4, column=0, columnspan=2, pady=20)
+translate_button.grid(row=1, column=0, columnspan=2, pady=20)
 
 # Run the application
 root.mainloop()
