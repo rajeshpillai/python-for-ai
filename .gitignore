@@ -37,3 +37,7 @@ Pipfile.lock
 # Environment variables
 .env
 
+*.mp3 
+
+lang-models
+
