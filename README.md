@@ -69,8 +69,14 @@ After setting up the environment and installing the dependencies, you can start 
 python chat.py
 ```
 
-# Bonus Example - Real time translator
+# Bonus Example 2 - Real time translator
 
 ## Referece
 - https://alphacephei.com/vosk/models 
-- 
+
+# Bonus Example 3 - Streamlit LangChain Chat 
+
+```shell 
+streamlit run ai-demo/mygpt/chap-app.py 
+```
+
