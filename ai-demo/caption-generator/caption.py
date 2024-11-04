@@ -1,3 +1,4 @@
+#RUN: streamlit run ai-demo/caption-generator/caption.py
 import os
 from openai import OpenAI
 import streamlit as st
