@@ -1,0 +1,18 @@
+from PIL import Image, ImageDraw
+
+# Correct the bullet size and coordinates for drawing a rectangle
+bullet_width = 8  # Width of the bullet
+bullet_height = 32  # Height of the bullet
+bullet_icon = Image.new('RGBA', (bullet_width, bullet_height), (0, 0, 0, 0))
+
+# Draw a bullet shape (vertical rectangle)
+draw = ImageDraw.Draw(bullet_icon)
+draw.rectangle([0, 0, bullet_width, bullet_height], fill=(255, 255, 0, 255))  # Yellow color for the bullet
+
+# Save the bullet image as 'bullet.png'
+bullet_icon_path = "bullet.png"
+bullet_icon.save(bullet_icon_path, "PNG")
+
+# Provide the generated bullet image file path
+bullet_icon_path
+
