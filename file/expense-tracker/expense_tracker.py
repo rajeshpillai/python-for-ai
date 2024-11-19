@@ -31,6 +31,7 @@ class ExpenseApp(npyscreen.NPSAppManaged):
         # Main screens of the application
         self.addForm("MAIN", MainMenu, name="Expense Tracker")
         self.addForm("ADD", AddExpenseForm, name="Add New Expense")
+        self.addForm("EDIT", EditExpenseForm, name="Edit Expense")
         self.addForm("VIEW", ViewExpenseForm, name="View Expense")
         self.addForm("SEARCH", SearchExpenseForm, name="Search Expenses")
 
@@ -48,13 +49,15 @@ class MainMenu(npyscreen.FormBaseNew):
             rely=3,
         )
         self.add_button = self.add(npyscreen.ButtonPress, name="Add Expense", relx=50, rely=5)
-        self.delete_button = self.add(npyscreen.ButtonPress, name="Delete Expense", relx=50, rely=7)
-        self.search_button = self.add(npyscreen.ButtonPress, name="Search Expenses", relx=50, rely=9)
-        self.refresh_button = self.add(npyscreen.ButtonPress, name="Refresh List", relx=50, rely=11)
-        self.quit_button = self.add(npyscreen.ButtonPress, name="Quit", relx=50, rely=13)
+        self.edit_button = self.add(npyscreen.ButtonPress, name="Edit Expense", relx=50, rely=7)
+        self.delete_button = self.add(npyscreen.ButtonPress, name="Delete Expense", relx=50, rely=9)
+        self.search_button = self.add(npyscreen.ButtonPress, name="Search Expenses", relx=50, rely=11)
+        self.refresh_button = self.add(npyscreen.ButtonPress, name="Refresh List", relx=50, rely=13)
+        self.quit_button = self.add(npyscreen.ButtonPress, name="Quit", relx=50, rely=15)
 
         # Assign button actions
         self.add_button.whenPressed = self.add_expense
+        self.edit_button.whenPressed = self.edit_expense
         self.delete_button.whenPressed = self.delete_expense
         self.search_button.whenPressed = self.search_expenses
         self.refresh_button.whenPressed = self.refresh_list
@@ -64,6 +67,14 @@ class MainMenu(npyscreen.FormBaseNew):
 
     def add_expense(self):
         self.parentApp.switchForm("ADD")
+
+    def edit_expense(self):
+        if self.expense_list.value:
+            selected_index = self.expense_list.value[0]
+            self.parentApp.getForm("EDIT").load_expense(selected_index)
+            self.parentApp.switchForm("EDIT")
+        else:
+            npyscreen.notify_confirm("No expense selected. Please select an expense to edit.", title="Error")
 
     def delete_expense(self):
         if self.expense_list.value:
@@ -131,6 +142,45 @@ class AddExpenseForm(npyscreen.ActionForm):
         self.parentApp.switchForm("MAIN")
 
 
+# Edit Expense Form
+class EditExpenseForm(npyscreen.ActionForm):
+    def create(self):
+        self.title = self.add(npyscreen.TitleText, name="Title:")
+        self.amount = self.add(npyscreen.TitleText, name="Amount:")
+        self.date = self.add(npyscreen.TitleDateCombo, name="Date:")
+        self.description = self.add(npyscreen.TitleText, name="Description:")
+        self.index = None
+
+    def load_expense(self, index):
+        self.index = index
+        with open(EXPENSE_FILE, "rb") as f:
+            expenses = pickle.load(f)
+            expense = expenses[index]
+        self.title.value = expense.title
+        self.amount.value = str(expense.amount)
+        self.date.value = datetime.datetime.strptime(expense.date, "%Y-%m-%d")
+        self.description.value = expense.description
+
+    def on_ok(self):
+        with open(EXPENSE_FILE, "rb+") as f:
+            expenses = pickle.load(f)
+            expenses[self.index] = Expense(
+                title=self.title.value,
+                amount=float(self.amount.value),
+                date=self.date.value.strftime("%Y-%m-%d"),
+                description=self.description.value,
+            )
+            f.seek(0)
+            f.truncate()
+            pickle.dump(expenses, f)
+
+        npyscreen.notify_confirm("Expense Edited Successfully!", title="Success")
+        self.parentApp.switchForm("MAIN")
+
+    def on_cancel(self):
+        self.parentApp.switchForm("MAIN")
+
+
 # View Expense Form
 class ViewExpenseForm(npyscreen.ActionForm):
     def create(self):
@@ -185,5 +235,3 @@ class SearchExpenseForm(npyscreen.ActionForm):
 
 # Run the App
 if __name__ == "__main__":
-    app = ExpenseApp()
-    app.run()
