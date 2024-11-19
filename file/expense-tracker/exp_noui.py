@@ -2,14 +2,18 @@ import struct
 import os
 
 # Define file and record format
-EXPENSE_FILE = "exp_txt.dat"
+EXPENSE_FILE = "expenses.dat"
 RECORD_FORMAT = "50s10s10s100s"  # Title, Amount, Date, Description
 RECORD_SIZE = struct.calcsize(RECORD_FORMAT)
 
 
 # Utility Functions
 def pack_expense(title, amount, date, description):
-    """Pack an expense into binary format."""
+    """Pack an expense into binary format with fixed sizes."""
+    title = title[:50].ljust(50)         # Truncate to 50 chars and pad if needed
+    amount = amount[:10].ljust(10)       # Truncate to 10 chars and pad if needed
+    date = date[:10].ljust(10)           # Truncate to 10 chars and pad if needed
+    description = description[:100].ljust(100)  # Truncate to 100 chars and pad if needed
     return struct.pack(RECORD_FORMAT, title.encode(), amount.encode(), date.encode(), description.encode())
 
 
@@ -22,10 +26,10 @@ def unpack_expense(record):
 # Functions for CRUD Operations
 def add_expense():
     """Add a new expense."""
-    title = input("Enter title (max 50 chars): ").ljust(50)
-    amount = input("Enter amount (max 10 chars): ").ljust(10)
-    date = input("Enter date (YYYY-MM-DD): ").ljust(10)
-    description = input("Enter description (max 100 chars): ").ljust(100)
+    title = input("Enter title (max 50 chars): ").strip()
+    amount = input("Enter amount (max 10 chars): ").strip()
+    date = input("Enter date (YYYY-MM-DD): ").strip()
+    description = input("Enter description (max 100 chars): ").strip()
     with open(EXPENSE_FILE, "ab") as f:
         f.write(pack_expense(title, amount, date, description))
     print("Expense added successfully!")
@@ -62,10 +66,14 @@ def edit_expense():
             return
         title, amount, date, description = unpack_expense(record)
         print(f"Editing Expense: {title.strip()} - {amount.strip()} - {date.strip()} - {description.strip()}")
-        new_title = input(f"Enter new title (leave blank to keep '{title.strip()}'): ").ljust(50) or title
-        new_amount = input(f"Enter new amount (leave blank to keep '{amount.strip()}'): ").ljust(10) or amount
-        new_date = input(f"Enter new date (leave blank to keep '{date.strip()}'): ").ljust(10) or date
-        new_description = input(f"Enter new description (leave blank to keep '{description.strip()}'): ").ljust(100) or description
+
+        # Only update fields if the input is not blank
+        new_title = input(f"Enter new title (leave blank to keep '{title.strip()}'): ").strip() or title.strip()
+        new_amount = input(f"Enter new amount (leave blank to keep '{amount.strip()}'): ").strip() or amount.strip()
+        new_date = input(f"Enter new date (leave blank to keep '{date.strip()}'): ").strip() or date.strip()
+        new_description = input(f"Enter new description (leave blank to keep '{description.strip()}'): ").strip() or description.strip()
+
+        # Write the updated record back to the file
         f.seek(expense_id * RECORD_SIZE)
         f.write(pack_expense(new_title, new_amount, new_date, new_description))
         print("Expense updated successfully!")
