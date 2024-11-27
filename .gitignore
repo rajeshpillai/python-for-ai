@@ -41,4 +41,5 @@ Pipfile.lock
 
 lang-models
 images
-
+# Ignore all temporary or backup files with .un~ extension
+*.un~
